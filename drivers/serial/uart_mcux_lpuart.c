@@ -19,6 +19,9 @@
 #include <zephyr/drivers/dma.h>
 #endif
 #include <zephyr/logging/log.h>
+#if defined(CONFIG_SOC_SERIES_IMX8X)
+#include <zephyr/drivers/clock_control/clock_control_scu.h>
+#endif
 
 #include <fsl_lpuart.h>
 #if CONFIG_NXP_LP_FLEXCOMM
@@ -53,6 +56,10 @@ struct mcux_lpuart_config {
 	const struct device *clock_dev;
 	const struct pinctrl_dev_config *pincfg;
 	clock_control_subsys_t clock_subsys;
+#if defined(CONFIG_SOC_SERIES_IMX8X)
+	clock_control_subsys_rate_t clock_rate;
+	void * clock_config;
+#endif /* CONFIG_SOC_SERIES_IMX8X */
 	uint32_t baud_rate;
 	uint8_t flow_ctrl;
 	uint8_t parity;
@@ -1078,6 +1085,18 @@ static int mcux_lpuart_configure_init(const struct device *dev, const struct uar
 		return -ENODEV;
 	}
 
+#if defined(CONFIG_SOC_SERIES_IMX8X)
+	/* Enable clock */
+	if (clock_control_on(config->clock_dev, config->clock_subsys)) {
+		return -EINVAL;
+	}
+	/* Set clock Frequency */
+	if (clock_control_set_rate(config->clock_dev, config->clock_subsys, \
+							config->clock_rate)) {
+		return -EINVAL;
+	}
+#endif /* CONFIG_SOC_SERIES_IMX8X */
+
 	if (clock_control_get_rate(config->clock_dev, config->clock_subsys,
 				   &clock_freq)) {
 		return -EINVAL;
@@ -1346,6 +1365,30 @@ static const struct uart_driver_api mcux_lpuart_driver_api = {
 #define PARENT_DEV(n)
 #endif /* CONFIG_NXP_LP_FLEXCOMM */
 
+#if defined(CONFIG_SOC_SERIES_IMX8X)
+#define LPUART_MCUX_DECLARE_CFG(n)                                      \
+static const struct mcux_lpuart_config mcux_lpuart_##n##_config = {     \
+	.base = (LPUART_Type *) DT_INST_REG_ADDR(n),                          \
+	PARENT_DEV(n)		\
+	.clock_dev = DEVICE_DT_GET(DT_INST_CLOCKS_CTLR(n)),                   \
+	.clock_subsys = (clock_control_subsys_t)DT_INST_CLOCKS_CELL(n, name), \
+	.clock_rate = (clock_control_subsys_rate_t)							  \
+										DT_INST_PROP(n, clock_frequency), \
+	.clock_config = (void *)&CLOCK_SCU_GET_CONFIG(DT_DRV_INST(n)),		  \
+	.baud_rate = DT_INST_PROP(n, current_speed),                          \
+	.flow_ctrl = FLOW_CONTROL(n),                                         \
+	.parity = DT_INST_ENUM_IDX_OR(n, parity, UART_CFG_PARITY_NONE),       \
+	.rs485_de_active_low = DT_INST_PROP(n, nxp_rs485_de_active_low),      \
+	.loopback_en = DT_INST_PROP(n, nxp_loopback),                         \
+	.single_wire = DT_INST_PROP(n, single_wire),	                      \
+	.rx_invert = DT_INST_PROP(n, rx_invert),	                      \
+	.tx_invert = DT_INST_PROP(n, tx_invert),	                      \
+	.pincfg = PINCTRL_DT_INST_DEV_CONFIG_GET(n),                          \
+	MCUX_LPUART_IRQ_INIT(n) \
+	RX_DMA_CONFIG(n)        \
+	TX_DMA_CONFIG(n)        \
+};
+#else
 #define LPUART_MCUX_DECLARE_CFG(n)                                      \
 static const struct mcux_lpuart_config mcux_lpuart_##n##_config = {     \
 	.base = (LPUART_Type *) DT_INST_REG_ADDR(n),                          \
@@ -1365,6 +1408,7 @@ static const struct mcux_lpuart_config mcux_lpuart_##n##_config = {     \
 	RX_DMA_CONFIG(n)        \
 	TX_DMA_CONFIG(n)        \
 };
+#endif
 
 #define LPUART_MCUX_INIT(n)						\
 									\
