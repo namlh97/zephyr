@@ -1,0 +1,8 @@
+# Copyright (c) 2017, NXP
+# SPDX-License-Identifier: Apache-2.0
+
+description: i.MX MU SCU IP node
+
+compatible: "nxp,imx-mu-scu"
+
+include: [base.yaml]

@@ -1,0 +1,8 @@
+# Copyright (c) 2024.
+# SPDX-License-Identifier: Apache-2.0
+
+description: i.MX SCU Power domain node
+
+compatible: "nxp,imx-pd-scu"
+
+include: [base.yaml]

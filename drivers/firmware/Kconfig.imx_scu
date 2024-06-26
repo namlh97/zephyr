@@ -1,0 +1,9 @@
+config FIRMWARE_IMX_SCU
+	bool "IMX SCU Protocol driver"
+	default y
+	depends on DT_HAS_NXP_IMX_SCU_ENABLED
+	help
+	  The System Controller Firmware (SCFW) is a low-level system function
+	  which runs on a dedicated Cortex-M core to provide power, clock, and
+	  resource management. It exists on some i.MX8 processors. e.g. i.MX8QM
+	  (QM, QP), and i.MX8QX (QXP, DX).

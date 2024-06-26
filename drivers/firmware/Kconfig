@@ -1,0 +1,22 @@
+# Firmware driver configuration options
+
+# Copyright (c) 2023
+# SPDX-License-Identifier: Apache-2.0
+
+#
+# Firmware drivers
+#
+menuconfig FIRMWARE
+	bool "FIRMWARE drivers"
+
+if FIRMWARE
+
+config FIRMWARE_INIT_PRIORITY
+	int "Firmware init priority"
+	default KERNEL_INIT_PRIORITY_OBJECTS
+	help
+	  Firmware driver device initialization priority.
+
+source "drivers/firmware/Kconfig.imx_scu"
+
+endif # FIRMWARE
