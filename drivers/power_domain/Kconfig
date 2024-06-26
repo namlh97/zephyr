@@ -72,4 +72,9 @@ config POWER_DOMAIN_GPIO_MONITOR_INIT_PRIORITY
 
 endif #POWER_DOMAIN_GPIO_MONITOR
 
+config POWER_DOMAIN_IMX_SCU
+	bool "Use IMX power gating mechanisms"
+	default y
+	depends on DT_HAS_NXP_IMX_SCU_POWER_DOMAIN_ENABLED
+	select DEVICE_DEPS
 endif
