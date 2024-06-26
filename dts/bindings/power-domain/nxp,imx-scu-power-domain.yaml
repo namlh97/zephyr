@@ -1,0 +1,16 @@
+# Copyright (c) 2022 Intel Corporation
+#
+# SPDX-License-Identifier: Apache-2.0
+
+description: Power domains for intel ADSP
+
+compatible: "nxp,imx-scu-power-domain"
+
+include: power-domain.yaml
+
+properties:
+  domain-resource:
+    type: array
+    required: true
+    description: |
+      IMX SCU Domain resources
