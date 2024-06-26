@@ -47,6 +47,10 @@ LOG_MODULE_REGISTER(LOG_MODULE_NAME);
 #include <zephyr/pm/device.h>
 #endif
 
+#if defined(CONFIG_SOC_SERIES_IMX8X)
+#include <zephyr/drivers/clock_control/clock_control_scu.h>
+#endif
+
 #include "../eth.h"
 #include <zephyr/drivers/ethernet/eth_nxp_enet.h>
 #include <zephyr/dt-bindings/ethernet/nxp_enet.h>
@@ -201,7 +205,7 @@ static const struct device *eth_nxp_enet_get_ptp_clock(const struct device *dev)
 }
 #endif /* CONFIG_PTP_CLOCK */
 
-static int eth_nxp_enet_tx(const struct device *dev, struct net_pkt *pkt)
+int eth_nxp_enet_tx(const struct device *dev, struct net_pkt *pkt)
 {
 	struct nxp_enet_mac_data *data = dev->data;
 	uint16_t total_len = net_pkt_get_len(pkt);
@@ -1001,6 +1005,10 @@ struct nxp_enet_mod_config {
 	DEVICE_MMIO_ROM;
 	const struct device *clock_dev;
 	clock_control_subsys_t clock_subsys;
+#if defined(CONFIG_SOC_SERIES_IMX8X)
+	clock_control_subsys_rate_t clock_rate;
+	void * clock_config;
+#endif /* CONFIG_SOC_SERIES_IMX8X */
 };
 
 struct nxp_enet_mod_data {
@@ -1011,6 +1019,12 @@ static int nxp_enet_mod_init(const struct device *dev)
 {
 	const struct nxp_enet_mod_config *config = dev->config;
 
+#if defined(CONFIG_SOC_SERIES_IMX8X)
+	clock_control_off(config->clock_dev, config->clock_subsys);
+	clock_control_set_rate(config->clock_dev, config->clock_subsys, config->clock_rate);
+	clock_control_configure(config->clock_dev, config->clock_subsys, config->clock_config);
+#endif /* CONFIG_SOC_SERIES_IMX8X */
+
 	clock_control_on(config->clock_dev, config->clock_subsys);
 
 	DEVICE_MMIO_MAP(dev, K_MEM_CACHE_NONE | K_MEM_DIRECT_MAP);
@@ -1019,7 +1033,26 @@ static int nxp_enet_mod_init(const struct device *dev)
 
 	return 0;
 }
-
+#if defined(CONFIG_SOC_SERIES_IMX8X)
+#define NXP_ENET_INIT(n, compat)												\
+																				\
+static const struct nxp_enet_mod_config nxp_enet_mod_cfg_##n = {				\
+		DEVICE_MMIO_ROM_INIT(DT_DRV_INST(n)),									\
+		.clock_dev = DEVICE_DT_GET(DT_CLOCKS_CTLR(DT_DRV_INST(n))),				\
+		.clock_subsys = (void *) DT_CLOCKS_CELL_BY_IDX(							\
+							DT_DRV_INST(n), 0, name),							\
+		.clock_rate = (clock_control_subsys_rate_t)								\
+									DT_PROP(DT_DRV_INST(n), clock_frequency),	\
+		.clock_config = (void *)&CLOCK_SCU_GET_CONFIG(DT_DRV_INST(n)),		  	\
+};																				\
+																				\
+static struct nxp_enet_mod_data nxp_enet_mod_data_##n;							\
+																				\
+/* Init the module before any of the MAC, MDIO, or PTP clock */					\
+DEVICE_DT_INST_DEFINE(n, nxp_enet_mod_init, NULL,								\
+		&nxp_enet_mod_data_##n, &nxp_enet_mod_cfg_##n,							\
+		POST_KERNEL, 0, NULL);
+#else
 #define NXP_ENET_INIT(n, compat)							\
 											\
 static const struct nxp_enet_mod_config nxp_enet_mod_cfg_##n = {			\
@@ -1035,12 +1068,34 @@ static struct nxp_enet_mod_data nxp_enet_mod_data_##n;					\
 DEVICE_DT_INST_DEFINE(n, nxp_enet_mod_init, NULL,					\
 		&nxp_enet_mod_data_##n, &nxp_enet_mod_cfg_##n,				\
 		POST_KERNEL, 0, NULL);
+#endif /* CONFIG_SOC_SERIES_IMX8X */
+
 
 #undef DT_DRV_COMPAT
 #define DT_DRV_COMPAT nxp_enet
 
 DT_INST_FOREACH_STATUS_OKAY_VARGS(NXP_ENET_INIT, DT_DRV_COMPAT)
 
+#if defined(CONFIG_SOC_SERIES_IMX8X)
+#define NXP_ENET1G_INIT(n, compat)												\
+																				\
+static const struct nxp_enet_mod_config nxp_enet1g_mod_cfg_##n = {				\
+		DEVICE_MMIO_ROM_INIT(DT_DRV_INST(n)),									\
+		.clock_dev = DEVICE_DT_GET(DT_CLOCKS_CTLR(DT_DRV_INST(n))),				\
+		.clock_subsys = (void *) DT_CLOCKS_CELL_BY_IDX(							\
+							DT_DRV_INST(n), 0, name),							\
+		.clock_rate = (clock_control_subsys_rate_t)								\
+									DT_PROP(DT_DRV_INST(n), clock_frequency),	\
+		.clock_config = (void *)&CLOCK_SCU_GET_CONFIG(DT_DRV_INST(n)),		  	\
+};																				\
+																				\
+static struct nxp_enet_mod_data nxp_enet1g_mod_data_##n;						\
+																				\
+/* Init the module before any of the MAC, MDIO, or PTP clock */					\
+DEVICE_DT_INST_DEFINE(n, nxp_enet_mod_init, NULL,								\
+		&nxp_enet1g_mod_data_##n, &nxp_enet1g_mod_cfg_##n,						\
+		POST_KERNEL, 0, NULL);
+#else
 #define NXP_ENET1G_INIT(n, compat)							\
 											\
 static const struct nxp_enet_mod_config nxp_enet1g_mod_cfg_##n = {			\
@@ -1056,6 +1111,7 @@ static struct nxp_enet_mod_data nxp_enet1g_mod_data_##n;				\
 DEVICE_DT_INST_DEFINE(n, nxp_enet_mod_init, NULL,					\
 		&nxp_enet1g_mod_data_##n, &nxp_enet1g_mod_cfg_##n,			\
 		POST_KERNEL, 0, NULL);
+#endif /* CONFIG_SOC_SERIES_IMX8X */
 
 #undef DT_DRV_COMPAT
 #define DT_DRV_COMPAT nxp_enet1g
