@@ -1,0 +1,8 @@
+sample:
+  description: Sample for show-casing the different use-cases of NXP IMX8X NET driver
+  name: NXP IMX8X NET sample
+common:
+  platform_allow: imx8x_a35
+  depends_on: netif
+  tags: net
+tests:
