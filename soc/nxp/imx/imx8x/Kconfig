@@ -12,5 +12,13 @@ config SOC_MIMX8QX6_ADSP
 	select HAS_MCUX
 	select CPU_HAS_DCACHE
 
+config SOC_MIMX8QX6_A35
+	select ARM64
+	select CPU_CORTEX_A35
+	select ARM_ARCH_TIMER if SYS_CLOCK_EXISTS && GIC
+	select HAS_MCUX if CLOCK_CONTROL
+	select HAS_MCUX_IOMUXC if PINCTRL
+
 config MCUX_CORE_SUFFIX
 	default "_dsp" if SOC_MIMX8QX6_ADSP
+	default "_ca35" if SOC_MIMX8QX6_A35

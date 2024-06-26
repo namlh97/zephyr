@@ -25,3 +25,17 @@ if(CONFIG_SOC_MIMX8QX6_ADSP)
 
   set(SOC_LINKER_SCRIPT ${CMAKE_CURRENT_SOURCE_DIR}/adsp/linker.ld CACHE INTERNAL "")
 endif()
+
+if(CONFIG_SOC_MIMX8QX6_A35)
+  zephyr_include_directories(a35)
+  add_subdirectory(a35)
+
+  zephyr_sources(
+    a35/pinctrl_soc.h
+    a35/soc.c
+  )
+
+  zephyr_sources_ifdef(CONFIG_ARM_MMU a35/mmu_regions.c)
+
+  set(SOC_LINKER_SCRIPT ${ZEPHYR_BASE}/include/zephyr/arch/arm64/scripts/linker.ld CACHE INTERNAL "")
+endif()

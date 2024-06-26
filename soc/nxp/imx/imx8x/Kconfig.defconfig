@@ -42,4 +42,27 @@ config TEST_LOGGING_DEFAULTS
 
 endif # SOC_MIMX8QX6_ADSP
 
+if SOC_MIMX8QX6_A35
+
+# Workaround for not being able to have commas in macro arguments
+DT_CHOSEN_Z_FLASH := zephyr,flash
+
+config FLASH_SIZE
+	default $(dt_chosen_reg_size_int,$(DT_CHOSEN_Z_FLASH),0,K)
+
+config FLASH_BASE_ADDRESS
+	default $(dt_chosen_reg_addr_hex,$(DT_CHOSEN_Z_FLASH))
+
+config SYS_CLOCK_HW_CYCLES_PER_SEC
+	default 8000000
+
+config DCACHE_LINE_SIZE
+	default 128
+
+config NUM_IRQS
+	int
+	# must be >= the highest interrupt number used
+	default 544
+endif # SOC_MIMX8QX6_A35
+
 endif # SOC_SERIES_IMX8X
