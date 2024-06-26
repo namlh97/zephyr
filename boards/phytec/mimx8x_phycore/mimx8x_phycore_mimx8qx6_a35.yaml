@@ -1,0 +1,17 @@
+#
+# Copyright 2024
+#
+# SPDX-License-Identifier: Apache-2.0
+#
+
+identifier: mimx8x_phycore/mimx8xqx6/a35
+name: MIMX8X Phycore
+type: mcu
+arch: arm64
+toolchain:
+  - zephyr
+testing:
+  only_tags:
+    - kernel
+    - sof
+vendor: nxp

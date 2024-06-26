@@ -1,0 +1,8 @@
+# MIMX8X Phycore
+
+# Copyright 2024
+# SPDX-License-Identifier: Apache-2.0
+
+config BOARD_MIMX8X_PHYCORE
+	select SOC_MIMX8QX6_A35 if BOARD_MIMX8X_PHYCORE_MIMX8QX6_A35
+	select SOC_PART_NUMBER_MIMX8QX6AVLFZ

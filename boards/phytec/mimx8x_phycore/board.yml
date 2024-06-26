@@ -1,0 +1,5 @@
+board:
+  name: mimx8x_phycore
+  vendor: phytec
+  socs:
+  - name: mimx8qx6

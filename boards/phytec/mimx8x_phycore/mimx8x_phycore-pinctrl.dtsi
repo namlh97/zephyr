@@ -1,0 +1,129 @@
+/*
+ * Copyright 2023 NXP
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include <zephyr/dt-bindings/pinctrl/imx8qxp-pinctrl.h>
+
+&iomuxc {
+	iomuxc_cm4_uart_rx_cm4_uart_rx: IOMUXC_CM4_UART_RX_CM4_UART_RX {
+		pinmux = <SC_P_ADC_IN2 IMX8QXP_CM4_UART_RX_CM4_UART_RX>;
+	};
+
+	iomuxc_cm4_uart_tx_cm4_uart_tx: IOMUXC_CM4_UART_TX_CM4_UART_TX {
+		pinmux = <SC_P_ADC_IN3 IMX8QXP_CM4_UART_TX_CM4_UART_TX>;
+	};
+
+	iomuxc_lpuart0_rx_uart_rx: IOMUXC_LPUART0_RX_UART_RX {
+		pinmux = <SC_P_UART0_RX 0>;
+	};
+
+	iomuxc_lpuart0_tx_uart_tx: IOMUXC_LPUART0_TX_UART_TX {
+		pinmux = <SC_P_UART0_TX 0>;
+	};
+
+	iomuxc_enet0_mdio_enet0_mdio: IOMUXC_ENET0_MDIO_ENET0_MDIO {
+		pinmux = <SC_P_ENET0_MDIO 0>;
+	};
+
+	iomuxc_enet0_mdc_enet0_mdc: IOMUXC_ENET0_MDC_ENET0_MDC {
+		pinmux = <SC_P_ENET0_MDC 0>;
+	};
+
+	iomuxc_enet0_refclk_125m_25m_enet0_refclk_125m_25m: IOMUXC_ENET0_REFCLK_125M_25M_ENET0_REFCLK_125M_25M {
+		pinmux = <SC_P_ENET0_REFCLK_125M_25M 0>;
+	};
+
+	iomuxc_enet0_rgmii_rxc_enet0_rgmii_rxc: IOMUXC_ENET0_RGMII_RXC_ENET0_RGMII_RXC {
+		pinmux = <SC_P_ENET0_RGMII_RXC 0>;
+	};
+
+	iomuxc_enet0_rgmii_rxd0_enet0_rgmii_rxd0: IOMUXC_ENET0_RGMII_RXD0_ENET0_RGMII_RXD0 {
+		pinmux = <SC_P_ENET0_RGMII_RXD0 0>;
+	};
+
+	iomuxc_enet0_rgmii_rxd1_enet0_rgmii_rxd1: IOMUXC_ENET0_RGMII_RXD1_ENET0_RGMII_RXD1 {
+		pinmux = <SC_P_ENET0_RGMII_RXD1 0>;
+	};
+
+	iomuxc_enet0_rgmii_rxd2_enet0_rgmii_rxd2: IOMUXC_ENET0_RGMII_RXD2_ENET0_RGMII_RXD2 {
+		pinmux = <SC_P_ENET0_RGMII_RXD2 0>;
+	};
+
+	iomuxc_enet0_rgmii_rxd3_enet0_rgmii_rxd3: IOMUXC_ENET0_RGMII_RXD3_ENET0_RGMII_RXD3 {
+		pinmux = <SC_P_ENET0_RGMII_RXD3 0>;
+	};
+
+	iomuxc_enet0_rgmii_rx_ctl_enet0_rgmii_rx_ctl: IOMUXC_ENET0_RGMII_RX_CTL_ENET0_RGMII_RX_CTL {
+		pinmux = <SC_P_ENET0_RGMII_RX_CTL 0>;
+	};
+
+	iomuxc_enet0_rgmii_txc_enet0_rgmii_txc: IOMUXC_ENET0_RGMII_TXC_ENET0_RGMII_TXC {
+		pinmux = <SC_P_ENET0_RGMII_TXC 0>;
+	};
+
+	iomuxc_enet0_rgmii_txd0_enet0_rgmii_txd0: IOMUXC_ENET0_RGMII_TXD0_ENET0_RGMII_TXD0 {
+		pinmux = <SC_P_ENET0_RGMII_TXD0 0>;
+	};
+
+	iomuxc_enet0_rgmii_txd1_enet0_rgmii_txd1: IOMUXC_ENET0_RGMII_TXD1_ENET0_RGMII_TXD1 {
+		pinmux = <SC_P_ENET0_RGMII_TXD1 0>;
+	};
+
+	iomuxc_enet0_rgmii_txd2_enet0_rgmii_txd2: IOMUXC_ENET0_RGMII_TXD2_ENET0_RGMII_TXD2 {
+		pinmux = <SC_P_ENET0_RGMII_TXD2 0>;
+	};
+
+	iomuxc_enet0_rgmii_txd3_enet0_rgmii_txd3: IOMUXC_ENET0_RGMII_TXD3_ENET0_RGMII_TXD3 {
+		pinmux = <SC_P_ENET0_RGMII_TXD3 0>;
+	};
+
+	iomuxc_enet0_rgmii_tx_ctl_enet0_rgmii_tx_ctl: IOMUXC_ENET0_RGMII_TX_CTL_ENET0_RGMII_TX_CTL {
+		pinmux = <SC_P_ENET0_RGMII_TX_CTL 0>;
+	};
+};
+
+&pinctrl {
+	cm4_lpuart_default: cm4_lpuart_default {
+		group0 {
+			pinmux = <&iomuxc_cm4_uart_rx_cm4_uart_rx>,
+				<&iomuxc_cm4_uart_tx_cm4_uart_tx>;
+		};
+	};
+
+	lpuart0_default: lpuart0_default {
+		group0 {
+			pinmux = <&iomuxc_lpuart0_rx_uart_rx>,
+				<&iomuxc_lpuart0_tx_uart_tx>;
+		};
+	};
+
+	pinmux_enet: pinmux_enet {
+		group0 {
+			pinmux = <&iomuxc_enet0_refclk_125m_25m_enet0_refclk_125m_25m>,
+			<&iomuxc_enet0_rgmii_rxc_enet0_rgmii_rxc>,
+			<&iomuxc_enet0_rgmii_rxd0_enet0_rgmii_rxd0>,
+			<&iomuxc_enet0_rgmii_rxd1_enet0_rgmii_rxd1>,
+			<&iomuxc_enet0_rgmii_rxd2_enet0_rgmii_rxd2>,
+			<&iomuxc_enet0_rgmii_rxd3_enet0_rgmii_rxd3>,
+			<&iomuxc_enet0_rgmii_rx_ctl_enet0_rgmii_rx_ctl>,
+			<&iomuxc_enet0_rgmii_txc_enet0_rgmii_txc>,
+			<&iomuxc_enet0_rgmii_txd0_enet0_rgmii_txd0>,
+			<&iomuxc_enet0_rgmii_txd1_enet0_rgmii_txd1>,
+			<&iomuxc_enet0_rgmii_txd2_enet0_rgmii_txd2>,
+			<&iomuxc_enet0_rgmii_txd3_enet0_rgmii_txd3>,
+			<&iomuxc_enet0_rgmii_tx_ctl_enet0_rgmii_tx_ctl>;
+		};
+	};
+
+	pinmux_enet_mdio: pinmux_enet_mdio {
+		group0 {
+			pinmux = <&iomuxc_enet0_mdio_enet0_mdio>,
+			<&iomuxc_enet0_mdc_enet0_mdc>;
+		};
+	};
+
+	pinmux_ptp: pinmux_ptp {
+	};
+};
