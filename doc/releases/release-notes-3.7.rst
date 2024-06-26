@@ -255,6 +255,15 @@ Build system and Infrastructure
 
   * Fixed issue with passing UTF-8 configs to applications using sysbuild.
 
+  * Fixed issue whereby domain file in sysbuild projects would be loaded and used with outdated
+    information if sysbuild configuration was changed, and ``west flash`` was ran directly after.
+
+  * Fixed issue with Zephyr modules not being listed in sysbuild if they did not have a Kconfig
+    file set.
+
+  * Add sysbuild ``SB_CONFIG_COMPILER_WARNINGS_AS_ERRORS`` Kconfig option to turn on
+    "warning as error" toolchain flags for all images, if set.
+
 Drivers and Sensors
 *******************
 
@@ -384,6 +393,13 @@ Drivers and Sensors
 * IEEE 802.15.4
 
 * Input
+
+  * New drivers: :dtcompatible:`adc-keys`, :dtcompatible:`chipsemi,chsc6x`,
+    :dtcompatible:`cirque,pinnacle`, :dtcompatible:`futaba,sbus`,
+    :dtcompatible:`pixart,pat912x`, :dtcompatible:`pixart,paw32xx`,
+    :dtcompatible:`pixart,pmw3610` and :dtcompatible:`sitronix,cf1133`.
+  * Migrated :dtcompatible:`holtek,ht16k33` and
+    :dtcompatible:`microchip,xec-kbd` from kscan to input subsystem.
 
 * LED Strip
 
@@ -649,6 +665,13 @@ Libraries / Subsystems
 
 * LoRa/LoRaWAN
 
+  * Added the Fragmented Data Block Transport service, which can be enabled via
+    :kconfig:option:`CONFIG_LORAWAN_FRAG_TRANSPORT`. In addition to the default fragment decoder
+    implementation from Semtech, an in-tree implementation with reduced memory footprint is
+    available.
+
+  * Added a sample to demonstrate LoRaWAN firmware-upgrade over the air (FUOTA).
+
 * ZBus
 
 HALs
@@ -658,6 +681,42 @@ HALs
 
 MCUboot
 *******
+
+  * Fixed memory leak in bootutil HKDF implementation
+
+  * Fixed enforcing TLV entries to be protected
+
+  * Fixed disabling instruction/data caches
+
+  * Fixed estimated image overhead size calculation
+
+  * Fixed issue with swap-move algorithm failing to validate multiple-images
+
+  * Fixed align script error in imgtool
+
+  * Fixed img verify for hex file format in imgtool
+
+  * Fixed issue with reading the flash image reset vector
+
+  * Fixed too-early ``check_config.h`` include in mbedtls
+
+  * Refactored image dependency functions to reduce code size
+
+  * Added MCUboot support for ``ESP32-C6``
+
+  * Added optional MCUboot boot banner
+
+  * Added TLV querying for protected region
+
+  * Added using builtin keys for verification in bootutil
+
+  * Added builtin ECDSA key support for PSA Crypto backend
+
+  * Added ``OVERWRITE_ONLY_KEEP_BACKUP`` option for secondary images
+
+  * Added defines for ``SOC_FLASH_0_ID`` and ``SPI_FLASH_0_ID``
+
+  * The MCUboot version in this release is version ``2.1.0+0-dev``.
 
 Trusted Firmware-M
 ******************

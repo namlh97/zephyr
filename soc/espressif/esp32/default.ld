@@ -104,7 +104,7 @@ PROVIDE(_memmap_vecbase_reset = 0x40000450);
 PROVIDE(_memmap_reset_vector = 0x40000400);
 
 #ifdef CONFIG_BT
-_heap_sentry = SRAM1_DRAM_USABLE_START;
+_heap_sentry = SRAM1_DRAM_USER_START;
 #else
 _heap_sentry = DRAM1_BT_SHM_BUFFERS_START; /* was 0x3ffe3f20; */
 #endif
@@ -805,7 +805,7 @@ SECTIONS
     . = ALIGN(4);
   } GROUP_DATA_LINK_IN(RODATA_REGION, ROMABLE_REGION)
 
-  #include <zephyr/linker/common-rom/common-rom-cpp.ld>
+  #include <zephyr/linker/common-rom/common-rom-init.ld>
   #include <zephyr/linker/common-rom/common-rom-kernel-devices.ld>
   #include <zephyr/linker/common-rom/common-rom-ztest.ld>
   #include <zephyr/linker/common-rom/common-rom-net.ld>
