@@ -14,6 +14,7 @@
 #include <zephyr/drivers/pinctrl.h>
 #include <zephyr/drivers/clock_control.h>
 #include <zephyr/sys_clock.h>
+#include <fsl_enet.h>
 
 struct nxp_enet_mdio_config {
 	const struct pinctrl_dev_config *pincfg;
