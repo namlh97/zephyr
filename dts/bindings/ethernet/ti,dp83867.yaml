@@ -1,0 +1,131 @@
+# Copyright 2023 NXP
+# SPDX-License-Identifier: Apache-2.0
+
+description: Texas Instruments DP83867 Ethernet PHY device
+
+compatible: "ti,dp83867"
+
+include: ethernet-phy.yaml
+
+properties:
+  ti,min-output-impedance:
+    type: boolean
+    description: |
+       MAC Interface Impedance control to set the programmable output impedance
+       to a minimum value (35 ohms).
+
+  ti,max-output-impedance:
+    type: boolean
+    description: |
+      MAC Interface Impedance control to set the programmable output impedance
+      to a maximum value (70 ohms).
+      Note: ti,min-output-impedance and ti,max-output-impedance are mutually
+        exclusive. When both properties are present ti,max-output-impedance
+        takes precedence.
+
+  tx-fifo-depth:
+    type: int
+    description: |
+       Transmitt FIFO depth see dt-bindings/net/ti-dp83867.h for values
+
+  rx-fifo-depth:
+    type: int
+    description: |
+       Receive FIFO depth see dt-bindings/net/ti-dp83867.h for values
+
+  ti,clk-output-sel:
+    type: int
+    description: |
+      Muxing option for CLK_OUT pin.  See dt-bindings/net/ti-dp83867.h
+      for applicable values. The CLK_OUT pin can also be disabled by this
+      property.  When omitted, the PHY's default will be left as is.
+
+  ti,rx-internal-delay:
+    type: int
+    description: |
+      RGMII Receive Clock Delay - see dt-bindings/net/ti-dp83867.h
+      for applicable values. Required only if interface type is
+      PHY_INTERFACE_MODE_RGMII_ID or PHY_INTERFACE_MODE_RGMII_RXID.
+
+  ti,tx-internal-delay:
+    type: int
+    description: |
+      RGMII Transmit Clock Delay - see dt-bindings/net/ti-dp83867.h
+      for applicable values. Required only if interface type is
+      PHY_INTERFACE_MODE_RGMII_ID or PHY_INTERFACE_MODE_RGMII_TXID.
+
+        Note: If the interface type is PHY_INTERFACE_MODE_RGMII the TX/RX clock
+          delays will be left at their default values, as set by the PHY's pin
+          strapping. The default strapping will use a delay of 2.00 ns.  Thus
+          PHY_INTERFACE_MODE_RGMII, by default, does not behave as RGMII with no
+          internal delay, but as PHY_INTERFACE_MODE_RGMII_ID.  The device tree
+          should use "rgmii-id" if internal delays are desired as this may be
+          changed in future to cause "rgmii" mode to disable delays.
+
+  ti,dp83867-rxctrl-strap-quirk:
+    type: boolean
+    description: |
+      This denotes the fact that the board has RX_DV/RX_CTRL pin strapped in
+      mode 1 or 2. To ensure PHY operation, there are specific actions that
+      software needs to take when this pin is strapped in these modes.
+      See data manual for details.
+
+  ti,sgmii-ref-clock-output-enable:
+    type: boolean
+    description: |
+      This denotes which SGMII configuration is used (4 or 6-wire modes).
+      Some MACs work with differential SGMII clock. See data manual for details.
+
+  ti,fifo-depth:
+    type: int
+    description: |
+      Transmitt FIFO depth- see dt-bindings/net/ti-dp83867.h for applicable
+      values.
+
+  ti,enet-phy-lane-swap:
+      type: boolean
+      description: |
+        If set, indicates the PHY will swap the TX/RX lanes to
+        compensate for the board being designed with the lanes swapped.
+
+  ti,enet-phy-lane-no-swap:
+      type: boolean
+      description: |
+        If set, indicates that PHY will disable swap of the
+        TX/RX lanes. This property allows the PHY to work correcly after e.g. 
+        wrong bootstrap configuration caused by issues in PCB layout design.
+
+  ti,led0-active-low:
+    type: boolean
+    description: |
+      This denotes that the LED_0 pin should be driven as active low.
+
+  ti,led1-active-low:
+    type: boolean
+    description: |
+      This denotes that the LED_1 pin should be driven as active low.
+
+  ti,led2-active-low:
+    type: boolean
+    description: |
+      This denotes that the LED_2 pin should be driven as active low.
+
+  ti,reset-gpio:
+    type: phandle-array
+    specifier-space: gpio
+    description: GPIO connected to PHY reset signal pin. Reset is active low.
+
+  ti,interrupt-gpio:
+    type: phandle-array
+    specifier-space: gpio
+    description: GPIO for interrupt signal indicating PHY state change.
+
+  ti,interface-type:
+    type: string
+    required: true
+    description: Which type of phy connection the phy is set up for
+    enum:
+      - "mii"
+      - "rmii"
+      - "rgmii"
+      - "rgmii-id"
