@@ -1,0 +1,56 @@
+/*
+ * Copyright (c) 2021 NXP
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+/dts-v1/;
+
+#include <nxp/nxp_imx8x_m4.dtsi>
+#include "mimx8x_phycore-pinctrl.dtsi"
+
+/ {
+	model = "mimx8x_phycore";
+	compatible = "nxp";
+
+	chosen {
+		zephyr,sram = &sram0;
+		zephyr,console = &lpuart1;
+		zephyr,shell-uart = &lpuart1;
+	};
+
+	sram0: memory@88000000 {
+		device_type = "memory";
+		compatible = "mmio-sram";
+		reg = <0x88000000 DT_SIZE_M(1)>;
+	};
+};
+
+&pd {
+	pd_domain: pd_domain {
+		compatible = "nxp,imx-scu-power-domain";
+		domain-resource = <IMX_SC_R_M4_0_UART>, <IMX_SC_R_UART_0>, <IMX_SC_R_UART_1>,
+					<IMX_SC_R_IRQSTR_M4_0>;
+	};
+};
+
+&cm4_lpuart {
+	status = "disabled";
+	current-speed = <115200>;
+	pinctrl-0 = <&cm4_lpuart_default>;
+	pinctrl-names = "default";
+};
+
+&lpuart0 {
+	status = "disabled";
+	current-speed = <115200>;
+	pinctrl-0 = <&lpuart0_default>;
+	pinctrl-names = "default";
+};
+
+&lpuart1 {
+	status = "okay";
+	current-speed = <115200>;
+	pinctrl-0 = <&lpuart1_default>;
+	pinctrl-names = "default";
+};

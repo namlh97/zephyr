@@ -23,6 +23,14 @@
 		pinmux = <SC_P_UART0_TX 0>;
 	};
 
+	iomuxc_lpuart1_rx_uart_rx: IOMUXC_LPUART1_RX_UART_RX {
+		pinmux = <SC_P_UART1_RX 0>;
+	};
+
+	iomuxc_lpuart1_tx_uart_tx: IOMUXC_LPUART1_TX_UART_TX {
+		pinmux = <SC_P_UART1_TX 0>;
+	};
+
 	iomuxc_enet0_mdio_enet0_mdio: IOMUXC_ENET0_MDIO_ENET0_MDIO {
 		pinmux = <SC_P_ENET0_MDIO 0>;
 	};
@@ -96,6 +104,13 @@
 		group0 {
 			pinmux = <&iomuxc_lpuart0_rx_uart_rx>,
 				<&iomuxc_lpuart0_tx_uart_tx>;
+		};
+	};
+
+	lpuart1_default: lpuart1_default {
+		group0 {
+			pinmux = <&iomuxc_lpuart1_rx_uart_rx>,
+				<&iomuxc_lpuart1_tx_uart_tx>;
 		};
 	};
 
