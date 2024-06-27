@@ -65,4 +65,22 @@ config NUM_IRQS
 	default 544
 endif # SOC_MIMX8QX6_A35
 
+if SOC_MIMX8QX6_M4
+
+config SYS_CLOCK_HW_CYCLES_PER_SEC
+	default 666000000
+
+config SYS_CLOCK_TICKS_PER_SEC
+	default 50000
+
+config DCACHE_LINE_SIZE
+	default 128
+
+config NUM_IRQS
+	int
+	# must be >= the highest interrupt number used
+	default 595
+
+endif # SOC_MIMX8QX6_M4
+
 endif # SOC_SERIES_IMX8X

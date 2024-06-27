@@ -39,3 +39,15 @@ if(CONFIG_SOC_MIMX8QX6_A35)
 
   set(SOC_LINKER_SCRIPT ${ZEPHYR_BASE}/include/zephyr/arch/arm64/scripts/linker.ld CACHE INTERNAL "")
 endif()
+
+if(CONFIG_SOC_MIMX8QX6_M4)
+  zephyr_include_directories(m4)
+  add_subdirectory(m4)
+
+  zephyr_sources(
+    m4/pinctrl_soc.h
+    m4/soc.c
+  )
+
+  set(SOC_LINKER_SCRIPT ${ZEPHYR_BASE}/include/zephyr/arch/arm/cortex_m/scripts/linker.ld CACHE INTERNAL "")
+endif()

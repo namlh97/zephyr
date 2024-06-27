@@ -27,6 +27,12 @@ config SOC_MIMX8QX6_A35
 	help
 	  Enable support for NXP i.MX 8QXP A35
 
+config SOC_MIMX8QX6_M4
+	bool
+	select SOC_MIMX8QX6
+	help
+	  Enable support for NXP i.MX 8QXP M4
+
 config SOC_TOOLCHAIN_NAME
 	string
 	default "nxp_imx_adsp" if SOC_MIMX8QX6_ADSP
