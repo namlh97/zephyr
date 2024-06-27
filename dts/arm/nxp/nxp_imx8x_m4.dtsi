@@ -1,0 +1,175 @@
+/*
+ * Copyright (c) 2021
+ *
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+#include <arm/armv7-m.dtsi>
+#include <zephyr/dt-bindings/clock/imx_scu_clock.h>
+#include <zephyr/dt-bindings/firmware/imx/rsrc.h>
+#include <mem.h>
+
+/ {
+	cpus {
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		cpu@0 {
+			device_type = "cpu";
+			compatible = "arm,cortex-m4";
+			reg = <0x0>;
+		};
+	};
+
+	scu: system-controller {
+		compatible = "nxp,imx-scu";
+
+		clk: clock-controller {
+			compatible = "nxp,imx-clock-scu";
+			#clock-cells = <3>;
+		};
+
+		iomuxc: iomuxc {
+			compatible = "nxp,imx-iomuxc-scu";
+			pinctrl: pinctrl {
+				compatible = "nxp,imx8-pinctrl";
+			};
+		};
+
+		pd: power-domain {
+			compatible = "nxp,imx-pd-scu";
+		};
+	};
+
+	soc {
+		irqsteer: interrupt-controller@51070000 {
+			compatible = "nxp,irqsteer-intc";
+			reg = <0x51070000 DT_SIZE_K(64)>;
+			power-domain = <&pd_domain>;
+			#size-cells = <0>;
+			#address-cells = <1>;
+
+			master0: interrupt-controller@0 {
+				compatible = "nxp,irqsteer-master";
+				reg = <0>;
+				interrupt-controller;
+				#interrupt-cells = <1>;
+				interrupts-extended = <&nvic 32 0>;
+				status = "okay";
+			};
+			master1: interrupt-controller@1 {
+				compatible = "nxp,irqsteer-master";
+				reg = <1>;
+				interrupt-controller;
+				#interrupt-cells = <1>;
+				interrupts-extended = <&nvic 33 0>;
+				status = "okay";
+			};
+			master2: interrupt-controller@2 {
+				compatible = "nxp,irqsteer-master";
+				reg = <2>;
+				interrupt-controller;
+				#interrupt-cells = <1>;
+				interrupts-extended = <&nvic 34 0>;
+				status = "okay";
+			};
+			master3: interrupt-controller@3 {
+				compatible = "nxp,irqsteer-master";
+				reg = <3>;
+				interrupt-controller;
+				#interrupt-cells = <1>;
+				interrupts-extended = <&nvic 35 0>;
+				status = "okay";
+			};
+			master4: interrupt-controller@4 {
+				compatible = "nxp,irqsteer-master";
+				reg = <4>;
+				interrupt-controller;
+				#interrupt-cells = <1>;
+				interrupts-extended = <&nvic 36 0>;
+				status = "okay";
+			};
+			master5: interrupt-controller@5 {
+				compatible = "nxp,irqsteer-master";
+				reg = <5>;
+				interrupt-controller;
+				#interrupt-cells = <1>;
+				interrupts-extended = <&nvic 37 0>;
+				status = "disabled";
+			};
+			master6: interrupt-controller@6 {
+				compatible = "nxp,irqsteer-master";
+				reg = <6>;
+				interrupt-controller;
+				#interrupt-cells = <1>;
+				interrupts-extended = <&nvic 38 0>;
+				status = "disabled";
+			};
+			master7: interrupt-controller@7 {
+				compatible = "nxp,irqsteer-master";
+				reg = <7>;
+				interrupt-controller;
+				#interrupt-cells = <1>;
+				interrupts-extended = <&nvic 39 0>;
+				status = "disabled";
+			};
+		};
+
+		cm40_subsys: bus@40000000 {
+			compatible = "simple-bus";
+			#address-cells = <1>;
+			#size-cells = <1>;
+			ranges = <0 0x40000000 0x4000000>;
+
+			/* CM40 MU1_A, used to interact with the SCFW */
+			scu_mu: mailbox@41480000 {
+				compatible = "nxp,imx-mu-scu";
+				reg = <0x41480000 DT_SIZE_K(64)>;
+			};
+
+			cm4_lpuart: serial@41220000 {
+				compatible = "nxp,imx-lpuart", "nxp,kinetis-lpuart";
+				reg = <0x41220000 DT_SIZE_K(64)>;
+				interrupts = <25 0>;
+				interrupt-parent=<&nvic>;
+				clocks = <&clk IMX_CLOCK_M4_0_LPUART IMX_SC_PM_CLK_PER 0>;
+				clock-frequency = <24000000>;
+				power-domain = <&pd_domain>;
+				status = "disabled";
+			};
+		};
+
+		adma_subsys: bus@5a000000 {
+			compatible = "simple-bus";
+			ranges = <0 0x5a000000 0x1000000>;
+			#address-cells = <1>;
+			#size-cells = <1>;
+
+			lpuart0: serial@5a060000 {
+				compatible = "nxp,imx-lpuart", "nxp,kinetis-lpuart";
+				reg = <0x5a060000 DT_SIZE_K(64)>;
+				interrupts = <308 0>;
+				interrupt-parent=<&nvic>;
+				clocks = <&clk IMX_CLOCK_DMA_LPUART0 IMX_SC_PM_CLK_PER 0>;
+				clock-frequency = <24000000>;
+				power-domain = <&pd_domain>;
+				status = "disabled";
+			};
+
+			lpuart1: serial@5a070000 {
+				compatible = "nxp,imx-lpuart", "nxp,kinetis-lpuart";
+				reg = <0x5a070000 DT_SIZE_K(64)>;
+				interrupts = <309 0>;
+				interrupt-parent=<&nvic>;
+				clocks = <&clk IMX_CLOCK_DMA_LPUART1 IMX_SC_PM_CLK_PER 0>;
+				clock-frequency = <24000000>;
+				power-domain = <&pd_domain>;
+				status = "disabled";
+			};
+		};
+	};
+};
+
+&nvic {
+	arm,num-irq-priority-bits = <4>;
+};
