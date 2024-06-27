@@ -5,8 +5,6 @@ config NXP_IRQSTEER
 	bool "IRQ_STEER interrupt controller for NXP chips"
 	default y
 	depends on DT_HAS_NXP_IRQSTEER_INTC_ENABLED
-	depends on MULTI_LEVEL_INTERRUPTS
-	depends on XTENSA
 	help
 		The IRQSTEER INTC provides support for MUX-ing
 		multiple interrupts from peripheral to one or

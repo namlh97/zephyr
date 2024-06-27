@@ -258,6 +258,13 @@
 /* utility macros */
 #define UINT_TO_IRQSTEER(x) ((IRQSTEER_Type *)(x))
 
+#ifdef CONFIG_SOC_MIMX8QX6_M4
+#define GET_MASTER_INDEX(irq) ((irq - FSL_FEATURE_IRQSTEER_IRQ_START_INDEX) / 64)
+#define NUM_IRQS_PER_REG 32
+#define REG_FROM_IRQ(irq) (irq / NUM_IRQS_PER_REG)
+#define BIT_FROM_IRQ(irq) (irq % NUM_IRQS_PER_REG)
+#endif /* CONFIG_SOC_MIMX8QX6_M4 */
+
 struct irqsteer_config {
 	uint32_t regmap_phys;
 	uint32_t regmap_size;
@@ -276,6 +283,117 @@ static struct irqsteer_dispatcher dispatchers[] = {
 	IRQSTEER_DECLARE_DISPATCHERS(DT_NODELABEL(irqsteer))
 };
 
+#ifdef CONFIG_SOC_MIMX8QX6_M4
+void z_soc_irq_enable_disable(uint32_t irq, bool enable)
+{
+	const struct irqsteer_config *cfg;
+	uint32_t i;
+
+	if (irq < FSL_FEATURE_IRQSTEER_IRQ_START_INDEX) {
+		if (enable) {
+			NVIC_EnableIRQ((IRQn_Type)irq);
+		} else {
+			NVIC_DisableIRQ((IRQn_Type)irq);
+		}
+	}
+	else {
+		i = GET_MASTER_INDEX(irq);
+		cfg = dispatchers[i].dev->config;
+
+		if (enable) {
+			IRQSTEER_EnableInterrupt(UINT_TO_IRQSTEER(cfg->regmap_phys), irq);
+		} else {
+			IRQSTEER_DisableInterrupt(UINT_TO_IRQSTEER(cfg->regmap_phys), irq);
+		}
+	}
+
+	return;
+}
+
+void z_soc_irq_init(void)
+{
+	int irq = 0;
+
+	for (irq = 0; irq < CONFIG_NUM_IRQS; irq++) {
+		NVIC_SetPriority((IRQn_Type)irq, _IRQ_PRIO_OFFSET);
+	}
+}
+
+void z_soc_irq_enable(uint32_t irq)
+{
+	z_soc_irq_enable_disable(irq, true);
+}
+
+void z_soc_irq_disable(uint32_t irq)
+{
+	z_soc_irq_enable_disable(irq, false);
+}
+
+int z_soc_irq_is_enabled(unsigned int irq)
+{
+	const struct irqsteer_config *cfg;
+	uint32_t i;
+
+	if (irq < FSL_FEATURE_IRQSTEER_IRQ_START_INDEX) {
+		return (NVIC->ISER[REG_FROM_IRQ(irq)] & BIT(BIT_FROM_IRQ(irq)));
+	}
+	else {
+
+		i = GET_MASTER_INDEX(irq);
+		cfg = dispatchers[i].dev->config;
+
+		return IRQSTEER_InterruptIsEnabled(UINT_TO_IRQSTEER(cfg->regmap_phys), \
+											irq);
+	}
+
+	return false;
+}
+
+void z_soc_irq_eoi(unsigned int irq)
+{
+	return;
+}
+
+inline __attribute__((always_inline)) unsigned int z_soc_irq_get_active(void)
+{
+	return __get_IPSR();
+}
+
+void z_soc_irq_priority_set(unsigned int irq, unsigned int prio, uint32_t flags)
+{
+	if (IS_ENABLED(CONFIG_ZERO_LATENCY_IRQS) && (flags & IRQ_ZERO_LATENCY)) {
+		prio = _EXC_ZERO_LATENCY_IRQS_PRIO;
+	} else {
+		prio += _IRQ_PRIO_OFFSET;
+	}
+
+	NVIC_SetPriority((IRQn_Type)irq, prio);
+}
+
+static void irqsteer_isr_dispatcher(const void *data)
+{
+	struct irqsteer_dispatcher *dispatcher;
+	const struct irqsteer_config *cfg;
+	uint32_t table_idx;
+	int irq;
+
+	dispatcher = (struct irqsteer_dispatcher *)data;
+	cfg = dispatcher->dev->config;
+
+	/* Gets the next interrupt source (currently set) of one specific master.*/
+	irq = IRQSTEER_GetMasterNextInterrupt(UINT_TO_IRQSTEER(cfg->regmap_phys),
+						    dispatcher->master_index);
+
+	if (NotAvail_IRQn != irq) {
+		/* compute index in the SW ISR table */
+		table_idx = z_get_sw_isr_table_idx(irq);
+
+		/* call child's ISR */
+		_sw_isr_table[table_idx].isr(_sw_isr_table[table_idx].arg);
+	}
+	return;
+}
+#else
 /* used to convert system INTID to zephyr INTID */
 static int to_zephyr_irq(uint32_t regmap, uint32_t irq,
 			 struct irqsteer_dispatcher *dispatcher)
@@ -436,6 +554,8 @@ static void irqsteer_isr_dispatcher(const void *data)
 		status >>= 1;
 	}
 }
+#endif /* CONFIG_SOC_MIMX8QX6_M4 */
+
 
 static void irqsteer_enable_dispatchers(const struct device *dev)
 {
@@ -450,8 +570,11 @@ static void irqsteer_enable_dispatchers(const struct device *dev)
 
 		IRQSTEER_EnableMasterInterrupt(UINT_TO_IRQSTEER(cfg->regmap_phys),
 					       dispatcher->irq);
-
+#ifdef CONFIG_SOC_MIMX8QX6_M4
+			NVIC_EnableIRQ((IRQn_Type)dispatcher->irq);
+#else
 		xtensa_irq_enable(XTENSA_IRQ_NUMBER(dispatcher->irq));
+#endif
 	}
 }
 
@@ -480,10 +603,11 @@ DEVICE_DT_INST_DEFINE(0,
 		      NULL, &irqsteer_config,
 		      PRE_KERNEL_1, CONFIG_INTC_INIT_PRIORITY,
 		      NULL);
-
+#if !defined(CONFIG_SOC_MIMX8QX6_M4)
 #define NXP_IRQSTEER_MASTER_IRQ_ENTRY_DEF(node_id)                                                 \
 	IRQ_PARENT_ENTRY_DEFINE(CONCAT(nxp_irqsteer_master_, DT_NODE_CHILD_IDX(node_id)), NULL,    \
 				DT_IRQN(node_id), INTC_CHILD_ISR_TBL_OFFSET(node_id),              \
 				DT_INTC_GET_AGGREGATOR_LEVEL(node_id));
 
 DT_INST_FOREACH_CHILD_STATUS_OKAY(0, NXP_IRQSTEER_MASTER_IRQ_ENTRY_DEF);
+#endif
