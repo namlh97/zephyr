@@ -455,7 +455,7 @@ static void gicv3_dist_init(void)
 	__ASSERT(sys_test_bit(GICD_CTLR, GICD_CTRL_NS),
 		"Current GIC does not support single security state");
 #endif
-#if defined(CONFIG_SOC_SERIES_IMX8X)
+#if !defined(CONFIG_ARMV8_A_NS)
 	/* Set the ARE_S and ARE_NS bit now that interrupts have been disabled */
 	sys_set_bit(GICD_CTLR, GICD_CTRL_ARE_S);
 	sys_set_bit(GICD_CTLR, GICD_CTRL_ARE_NS);
