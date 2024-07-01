@@ -67,6 +67,14 @@ config PHY_TI_DP83867
 	help
 	  Enable Texas Instruments DP83867 Ethernet PHY Driver
 
+config PHY_QCA_AR803X
+	bool "Qualcomm AR803X Phy Driver"
+	default y
+	depends on DT_HAS_QCA_AR803X_ENABLED
+	depends on MDIO
+	help
+	  Enable Texas Instruments DP83867 Ethernet PHY Driver
+
 config PHY_AUTONEG_TIMEOUT_MS
 	int "Auto-negotiation timeout value in milliseconds"
 	default 4000

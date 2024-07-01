@@ -1,0 +1,81 @@
+# Copyright 2023 NXP
+# SPDX-License-Identifier: Apache-2.0
+
+description: Qualcomm AR803X Ethernet PHY device
+
+compatible: "qca,ar803x"
+
+include: ethernet-phy.yaml
+
+properties:
+  qca,clk-out-frequency:
+    type: int
+    description: Clock output frequency in Hertz.
+    enum: [25000000, 50000000, 62500000, 125000000]
+
+  qca,clk-out-strength:
+    type: int
+    description: Clock output driver strength.
+    enum: [0, 1, 2]
+
+
+  qca,disable-smarteee:
+    type: boolean
+    description: Disable Atheros SmartEEE feature.
+
+
+  qca,keep-pll-enabled:
+    type: boolean
+    description: |
+      If set, keep the PLL enabled even if there is no link. Useful if you
+      want to use the clock output without an ethernet link.
+      Only supported on the AR8031.
+
+  qca,disable-hibernation-mode:
+    type: boolean
+    description: |
+      Disable Atheros AR803X PHYs hibernation mode. If present, indicates
+      that the hardware of PHY will not enter power saving mode when the
+      cable is disconnected. And the RX_CLK always keeps outputting a
+      valid clock.
+
+  qca,smarteee-tw-us-100m:
+    type: int
+    description: EEE Tw parameter for 100M links.
+
+  qca,smarteee-tw-us-1g:
+    type: int
+    description: EEE Tw parameter for gigabit links.
+
+  qca,interface-type:
+    type: string
+    required: true
+    description: Which type of phy connection the phy is set up for
+    enum:
+      - "mii"
+      - "rmii"
+      - "rgmii"
+      - "rgmii-id"
+      - "rgmii-rxid"
+      - "rgmii-txid"
+
+  vddio-supply:
+    type: phandle
+    description: |
+      RGMII I/O voltage regulator (see regulator/regulator.yaml).
+
+      The PHY supports RGMII I/O voltages of 1.5V, 1.8V and 2.5V. You can
+      either connect this to the vddio-regulator (1.5V / 1.8V) or the
+      vddh-regulator (2.5V).
+
+      Only supported on the AR8031.
+
+  reset-gpios:
+    type: phandle-array
+    description: GPIO connected to PHY reset signal pin. Reset is active low.
+
+  int-gpios:
+    type: phandle-array
+    description: GPIO for interrupt signal indicating PHY state change.
+
+
