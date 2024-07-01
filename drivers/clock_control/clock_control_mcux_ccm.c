@@ -254,7 +254,11 @@ static int mcux_ccm_get_subsys_rate(const struct device *dev,
 
 #ifdef CONFIG_PTP_CLOCK_NXP_ENET
 	case IMX_CCM_ENET_PLL:
+#ifdef CONFIG_SOC_SERIES_IMX8M
+		*rate = CLOCK_GetClockRootFreq(kCLOCK_EnetTimerClkRoot);
+#else
 		*rate = CLOCK_GetPllFreq(kCLOCK_PllEnet);
+#endif
 		break;
 #endif
 

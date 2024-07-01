@@ -63,6 +63,12 @@
 	};
 };
 
+&enet_ptp_clock {
+	status = "okay";
+	pinctrl-0 = <&pinmux_ptp>;
+	pinctrl-names = "default";
+};
+
 &uart1 {
 	status = "okay";
 	current-speed = <115200>;
