@@ -9,6 +9,14 @@
 #include <nxp/nxp_imx/mimx8mq6dvajz-pinctrl.dtsi>
 
 &pinctrl {
+	uart1_default: uart1_default {
+		group0 {
+			pinmux = <&iomuxc_uart1_rxd_uart_rx_uart1_rx>,
+				<&iomuxc_uart1_txd_uart_tx_uart1_tx>;
+			slew-rate = "fast";
+			drive-strength = "45-ohm";
+		};
+	};
 	uart2_default: uart2_default {
 		group0 {
 			pinmux = <&iomuxc_uart2_rxd_uart_rx_uart2_rx>,
@@ -18,4 +26,48 @@
 		};
 	};
 
+	pinmux_mdio: pinmux_mdio {
+		group0 {
+			pinmux = <&iomuxc_enet_mdc_enet_mdc_enet1_mdc>;
+			slew-rate = "slow";
+			drive-strength = "45-ohm";
+		};
+		group1 {
+			pinmux = <&iomuxc_enet_mdio_enet_mdio_enet1_mdio>;
+			slew-rate = "slow";
+			drive-strength = "45-ohm";
+			drive-open-drain;
+		};
+	};
+
+	pinmux_enet: pinmux_enet {
+		group0 {
+			pinmux = <&iomuxc_enet_td0_enet_rgmii_td_enet1_rgmii_td0>,
+				<&iomuxc_enet_td1_enet_rgmii_td_enet1_rgmii_td1>,
+				<&iomuxc_enet_td2_enet_rgmii_td_enet1_rgmii_td2>,
+				<&iomuxc_enet_td3_enet_rgmii_td_enet1_rgmii_td3>,
+				<&iomuxc_enet_txc_enet_rgmii_txc_enet1_rgmii_txc>,
+				<&iomuxc_enet_tx_ctl_enet_rgmii_tx_ctl_enet1_rgmii_tx_ctl>;
+			slew-rate = "max";
+			drive-strength = "40-ohm";
+		};
+		group01 {
+			pinmux = <&iomuxc_enet_rd0_enet_rgmii_rd_enet1_rgmii_rd0>,
+				<&iomuxc_enet_rd1_enet_rgmii_rd_enet1_rgmii_rd1>,
+				<&iomuxc_enet_rd2_enet_rgmii_rd_enet1_rgmii_rd2>,
+				<&iomuxc_enet_rd3_enet_rgmii_rd_enet1_rgmii_rd3>,
+				<&iomuxc_enet_rxc_enet_rgmii_rxc_enet1_rgmii_rxc>,
+				<&iomuxc_enet_rx_ctl_enet_rgmii_rx_ctl_enet1_rgmii_rx_ctl>;
+			input-schmitt-enable;
+			slew-rate = "fast";
+			drive-strength = "255-ohm";
+		};
+		group02 {
+			pinmux = <&iomuxc_gpio1_io09_gpio_io_gpio1_io09>;
+			slew-rate = "max";
+			drive-strength = "255-ohm";
+		};
+	};
+	pinmux_ptp: pinmux_ptp {
+	};
 };
